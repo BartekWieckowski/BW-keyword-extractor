@@ -1,16 +1,25 @@
-import spacy.cli
-spacy.cli.download("pl_core_news_sm")  # Pobierz model automatycznie na Cloud
-
 import streamlit as st
 import spacy
+import spacy.cli
+import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# --- Load SpaCy model safely ---
+MODEL_NAME = "pl_core_news_sm"
+
+try:
+    nlp = spacy.load(MODEL_NAME)
+except OSError:
+    with st.spinner(f"⏳ Pobieram model językowy SpaCy: {MODEL_NAME}..."):
+        spacy.cli.download(MODEL_NAME)
+        nlp = spacy.load(MODEL_NAME)
+
 # --- KeywordExtractorPremium ---
 class KeywordExtractorPremium:
-    def __init__(self, model_name="pl_core_news_sm"):
-        self.nlp = spacy.load(model_name)
+    def __init__(self):
+        self.nlp = nlp
         self.stop_words = self.nlp.Defaults.stop_words
     
     def noun_chunks_extractor(self, text):
