@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # --- Load SpaCy English model from local folder ---
-nlp = spacy.load("./model/en_core_web_sm")
+nlp = spacy.load("./model/en_core_web_sm/en_core_web_sm")
 
 # --- KeywordExtractorPremium ---
 class KeywordExtractorPremium:
