@@ -1,3 +1,6 @@
+import spacy.cli
+spacy.cli.download("pl_core_news_sm")  # Pobierz model automatycznie na Cloud
+
 import streamlit as st
 import spacy
 from sklearn.feature_extraction.text import TfidfVectorizer
