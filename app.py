@@ -70,7 +70,7 @@ class KeywordExtractorPremium:
 # --- Streamlit app ---
 st.set_page_config(page_title="Keyword & Phrase Extractor (English)", page_icon="📝")
 
-st.title("📝 Keyword & Phrase Extractor (English) 🚀")
+st.title("📝 Bartek's Keyword & Phrase Extractor (English) 🚀")
 st.write("Enter your text below to extract keywords and key phrases based on TF-IDF.")
 
 input_text = st.text_area("Enter your text here:", height=300)
