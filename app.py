@@ -1,12 +1,20 @@
 import streamlit as st
 import spacy
+import spacy.cli
 import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# --- Load SpaCy English model from local folder ---
-nlp = spacy.load("./model/en_core_web_sm/en_core_web_sm")
+# --- Load SpaCy model safely ---
+MODEL_NAME = "pl_core_news_sm"
+
+try:
+    nlp = spacy.load(MODEL_NAME)
+except OSError:
+    with st.spinner(f"⏳ Pobieram model językowy SpaCy: {MODEL_NAME}..."):
+        spacy.cli.download(MODEL_NAME)
+        nlp = spacy.load(MODEL_NAME)
 
 # --- KeywordExtractorPremium ---
 class KeywordExtractorPremium:
@@ -68,51 +76,51 @@ class KeywordExtractorPremium:
         return fig
 
 # --- Streamlit app ---
-st.set_page_config(page_title="Keyword & Phrase Extractor (English)", page_icon="📝")
+st.set_page_config(page_title="Keyword & Phrase Extractor (Polski)", page_icon="📝")
 
-st.title("📝 Keyword & Phrase Extractor (English) 🚀")
-st.write("Enter your text below to extract keywords and key phrases based on TF-IDF.")
+st.title("📝 Keyword & Phrase Extractor (Polski) 🚀")
+st.write("Wprowadź tekst poniżej, aby wyciągnąć słowa i frazy kluczowe na podstawie TF-IDF.")
 
-input_text = st.text_area("Enter your text here:", height=300)
+input_text = st.text_area("Wpisz tekst tutaj:", height=300)
 
-top_n = st.slider("How many TOP phrases/words to show?", min_value=5, max_value=20, value=10)
+top_n = st.slider("Ile TOP fraz/słów pokazać?", min_value=5, max_value=20, value=10)
 
 extractor = KeywordExtractorPremium()
 
-if st.button("🔍 Extract keywords and phrases"):
+if st.button("🔍 Wyciągnij słowa i frazy kluczowe"):
     if input_text.strip() == "":
-        st.warning("❗️ Please enter some text.")
+        st.warning("❗️ Wprowadź tekst.")
     else:
-        with st.spinner("Analyzing text..."):
+        with st.spinner("Analizuję tekst..."):
             phrases = extractor.extract_phrases(input_text, top_n)
             keywords = extractor.extract_keywords(input_text, top_n)
         
-        st.subheader("📌 Top Key Phrases")
+        st.subheader("📌 Top Frazy Kluczowe")
         for phrase, score in phrases:
             st.write(f"**{phrase}** — {score:.4f}")
         
-        st.pyplot(extractor.plot_top_items(phrases, title="Top Key Phrases"))
+        st.pyplot(extractor.plot_top_items(phrases, title="Top Frazy Kluczowe"))
         
-        st.subheader("📌 Top Keywords")
+        st.subheader("📌 Top Słowa Kluczowe")
         for word, score in keywords:
             st.write(f"**{word}** — {score:.4f}")
         
-        st.pyplot(extractor.plot_top_items(keywords, title="Top Keywords"))
+        st.pyplot(extractor.plot_top_items(keywords, title="Top Słowa Kluczowe"))
         
-        # --- Export to CSV ---
-        df_phrases = pd.DataFrame(phrases, columns=["Phrase", "TF-IDF Score"])
-        df_keywords = pd.DataFrame(keywords, columns=["Keyword", "TF-IDF Score"])
+        # --- Eksport do CSV ---
+        df_phrases = pd.DataFrame(phrases, columns=["Fraza", "TF-IDF Score"])
+        df_keywords = pd.DataFrame(keywords, columns=["Słowo", "TF-IDF Score"])
         
         st.download_button(
-            label="⬇️ Download phrases as CSV",
+            label="⬇️ Pobierz frazy do CSV",
             data=df_phrases.to_csv(index=False).encode('utf-8'),
-            file_name='key_phrases.csv',
+            file_name='frazy_kluczowe.csv',
             mime='text/csv'
         )
         
         st.download_button(
-            label="⬇️ Download keywords as CSV",
+            label="⬇️ Pobierz słowa do CSV",
             data=df_keywords.to_csv(index=False).encode('utf-8'),
-            file_name='keywords.csv',
+            file_name='slowa_kluczowe.csv',
             mime='text/csv'
         )
