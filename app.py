@@ -1,20 +1,12 @@
 import streamlit as st
 import spacy
-import spacy.cli
 import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# --- Load SpaCy English model safely ---
-MODEL_NAME = "en_core_web_sm"
-
-try:
-    nlp = spacy.load(MODEL_NAME)
-except OSError:
-    with st.spinner(f"⏳ Downloading SpaCy language model: {MODEL_NAME}..."):
-        spacy.cli.download(MODEL_NAME)
-        nlp = spacy.load(MODEL_NAME)
+# --- Load SpaCy English model from local folder ---
+nlp = spacy.load("./model/en_core_web_sm")
 
 # --- KeywordExtractorPremium ---
 class KeywordExtractorPremium:
@@ -124,4 +116,3 @@ if st.button("🔍 Extract keywords and phrases"):
             file_name='keywords.csv',
             mime='text/csv'
         )
-        
